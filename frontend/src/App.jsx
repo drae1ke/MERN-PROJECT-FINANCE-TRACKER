@@ -1,19 +1,47 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import Signup from "./Signup";
-import Signin from "./Signin";
+import { BrowserRouter as Router, Navigate, Route, Routes } from "react-router-dom";
 import FrontPage from "./FrontPage";
+import Signin from "./Signin";
+import Signup from "./Signup";
 import "./App.css";
 
-function App() {
-  const isLoggedIn = !!localStorage.getItem("token");
+const ProtectedRoute = ({ children }) => {
+  return localStorage.getItem("token") ? children : <Navigate to="/signin" replace />;
+};
 
+const GuestRoute = ({ children }) => {
+  return localStorage.getItem("token") ? <Navigate to="/" replace /> : children;
+};
+
+function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={isLoggedIn ? <FrontPage /> : <Navigate to="/signin" />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/signin" element={<Signin />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <FrontPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/signup"
+          element={
+            <GuestRoute>
+              <Signup />
+            </GuestRoute>
+          }
+        />
+        <Route
+          path="/signin"
+          element={
+            <GuestRoute>
+              <Signin />
+            </GuestRoute>
+          }
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );

@@ -1,19 +1,25 @@
 services:
   - type: web
     name: finance-backend
-    env: node
+    runtime: node
     region: oregon
-    buildCommand: cd backend && npm install
-    startCommand: cd backend && npm start
+    rootDir: backend
+    buildCommand: npm ci
+    startCommand: npm start
     envVars:
+      - key: NODE_ENV
+        value: production
       - key: MONGO_URI
-        value: ""
+        sync: false
       - key: JWT_SECRET
-        value: ""
+        generateValue: true
 
-  - type: static_site
+  - type: web
     name: finance-frontend
-    env: static
-    region: oregon
-    buildCommand: cd frontend && npm install && npm run build
-    publishPath: frontend/dist
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        sync: false

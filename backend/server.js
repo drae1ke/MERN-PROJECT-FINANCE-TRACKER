@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const authRoutes = require("./routes/authRoutes");
 const financeRoutes = require("./routes/financeRoutes");
+const fs = require("fs");
 const path = require("path");
 
 dotenv.config();
@@ -19,10 +20,14 @@ app.use("/api/finance", financeRoutes);
 // Serve frontend build in production (allows one-command start)
 if (process.env.NODE_ENV === "production") {
   const distPath = path.join(__dirname, "..", "frontend", "dist");
-  app.use(express.static(distPath));
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(distPath, "index.html"));
-  });
+  const indexPath = path.join(distPath, "index.html");
+
+  if (fs.existsSync(indexPath)) {
+    app.use(express.static(distPath));
+    app.get("/{*splat}", (req, res) => {
+      res.sendFile(indexPath);
+    });
+  }
 }
 
 mongoose

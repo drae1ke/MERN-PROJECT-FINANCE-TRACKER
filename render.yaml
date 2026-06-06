@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: finance-backend
+    env: node
+    region: oregon
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    envVars:
+      - key: MONGO_URI
+        value: ""
+      - key: JWT_SECRET
+        value: ""
+
+  - type: static_site
+    name: finance-frontend
+    env: static
+    region: oregon
+    buildCommand: cd frontend && npm install && npm run build
+    publishPath: frontend/dist
